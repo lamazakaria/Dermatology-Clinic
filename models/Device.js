@@ -15,7 +15,7 @@ const DeviceSchema = new mongoose.Schema({
         required : true,
         type: Number,
         minlenght:1,
-        maxlenght:100
+        maxlenght:500
         
     },
     Manufacturer:{
@@ -38,7 +38,8 @@ const DeviceSchema = new mongoose.Schema({
 
 function validateRegisterDevice(obj){
     const schema = joi.object({
-        PPM: joi.number().min(2).max(100).required(),
+        Code:joi.string().min(2).max(100).required(),
+        PPM: joi.number().min(1).max(500).required(),
         Manufacturer: joi.string().min(2).max(100).required(),
         dep_id:joi.string().trim().required(),
         
@@ -50,7 +51,7 @@ function validateRegisterDevice(obj){
 
 function validateUpdateDevice(obj){
     const schema = joi.object({
-        PPM: joi.number().trim().min(2).max(100),
+        PPM: joi.number().min(1).max(500),
         Manufacturer: joi.string().min(2).max(100),
         dep_id:joi.string().trim(),
         
@@ -67,5 +68,6 @@ const Device = mongoose.model("device",DeviceSchema)
 
 module.exports ={
     Device,
-    validateRegisterDevice
+    validateRegisterDevice,
+    validateUpdateDevice
 }

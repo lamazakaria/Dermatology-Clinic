@@ -55,7 +55,7 @@ const PrescripitionSchema = new mongoose.Schema({
 
 })
 
-const Prescripition = mongoose.model("prescripition",PrescripitionSchema)
+const Prescripition = mongoose.model("prescription",PrescripitionSchema)
 
 function validatePrescripition(obj){
     const schema = joi.object({
@@ -86,9 +86,9 @@ function validateUpdatePrescripition(obj){
 }
 module.exports = {
     Prescripition,
-    validatePrescripition
-//  validateLoginUser,
-//  validateUpdateUser
+    validatePrescripition,
+    validateUpdatePrescripition
+
 
 
 }

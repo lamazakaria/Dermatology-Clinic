@@ -68,18 +68,18 @@ const AdminSchema = new mongoose.Schema({
 
 })
 
-const Doctor = mongoose.model("admiin",AdminSchema)
+const Admin = mongoose.model("admin",AdminSchema)
 
 function validateRegisterAdmin(obj){
     const schema = joi.object({
-        Aname: joi.string().trim().min(2).max(100).required(),
-        Aemail: joi.string().trim().min(6).max(100).required().email(),
-        Apassword:joi.string().trim().min(6).max(100).required(),
-        ASalary:joi.number().min(1000).max(25000).required(),
-        Aphone:joi.string().trim().min(4).max(100).required(),
-        Asex:joi.string().trim().required(),
-        Aaddress:joi.string().trim().min(4).max(100).required(),
-        Aage:joi.number().min(24).max(80).required(),
+        name: joi.string().trim().min(2).max(100).required(),
+        email: joi.string().trim().min(6).max(100).required().email(),
+        password:joi.string().trim().min(6).max(100).required(),
+        Salary:joi.number().min(1000).max(25000).required(),
+        phone:joi.string().regex(/^[0-9]{11}$/).messages({'string.pattern.base': `Phone number must have 11 digits.`}).required(),
+        sex:joi.string().trim().required(),
+        address:joi.string().trim().min(4).max(100).required(),
+        age:joi.number().min(24).max(80).required(),
       
 
     });
@@ -89,8 +89,10 @@ function validateRegisterAdmin(obj){
 function validateLoginAdmin(obj){
     const schema = joi.object({
        
-        Aemail: joi.string().trim().min(6).max(100).required().email(),
-        Apassword:joi.string().trim().min(6).max(100).required()
+        email: joi.string().trim().min(6).max(100).required().email(),
+        password:joi.string().trim().min(6).max(100).required(),
+        person_type:joi.string().trim().required()
+
     
     });
     return schema.validate(obj)
@@ -99,9 +101,8 @@ function validateLoginAdmin(obj){
 
 module.exports = {
     Admin,
- validateRegisterAdmin
-//  validateLoginUser,
-//  validateUpdateUser
+ validateRegisterAdmin,
+ validateLoginAdmin
 
 
 }

@@ -54,5 +54,6 @@ const Dep = mongoose.model("department",DepSchema)
 
 module.exports ={
     Dep,
-    validateRegisterDepartment
+    validateRegisterDepartment,
+    validateUpdateDepartment
 }

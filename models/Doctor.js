@@ -84,16 +84,16 @@ const DoctorSchema = new mongoose.Schema({
 
 const Doctor = mongoose.model("doctor",DoctorSchema)
 
-function validateRegisterUser(obj){
+function validateRegisterDoctor(obj){
     const schema = joi.object({
-        Dname: joi.string().trim().min(2).max(100).required(),
-        Demail: joi.string().trim().min(6).max(100).required().email(),
-        Dpassword:joi.string().trim().min(6).max(100).required(),
-        DSalary:joi.number().min(1000).max(25000).required(),
-        Dphone:joi.string().trim().min(4).max(100).required(),
-        Dsex:joi.string().trim().required(),
-        Daddress:joi.string().trim().min(4).max(100).required(),
-        Dage:joi.number().min(24).max(80).required(),
+        name: joi.string().trim().min(2).max(100).required(),
+        email: joi.string().trim().min(6).max(100).required().email(),
+        password:joi.string().trim().min(6).max(100).required(),
+        Salary:joi.number().min(1000).max(25000).required(),
+        phone:joi.string().regex(/^[0-9]{11}$/).messages({'string.pattern.base': `Phone number must have 11 digits.`}).required(),
+        sex:joi.string().trim().required(),
+        address:joi.string().trim().min(4).max(100).required(),
+        age:joi.number().min(24).max(80).required(),
         Specialization:joi.string().min(2).max(50).required(),
         dep_id:joi.string().trim().required()
 
@@ -104,8 +104,9 @@ function validateRegisterUser(obj){
 
 function validateLoginDoctor(obj){
     const schema = joi.object({
-        Demail: joi.string().trim().min(6).max(100).required().email(),
-        Dpassword:joi.string().trim().min(6).max(100).required(),
+        email: joi.string().trim().min(6).max(100).required().email(),
+        password:joi.string().trim().min(6).max(100).required(),
+        person_type:joi.string().trim().required()
 
     });
     return schema.validate(obj)
@@ -113,22 +114,25 @@ function validateLoginDoctor(obj){
 
 function validateUpdateDoctor(obj){
     const schema = joi.object({
-        Dname: joi.string().trim().min(2).max(100),
-        Demail: joi.string().trim().min(6).max(100).email(),
-        DSalary:joi.number().min(1000).max(25000),
-        Dphone:joi.string().trim().min(4).max(100),
-        Daddress:joi.string().trim().min(4).max(100),
-        Dage:joi.number().min(24).max(80),
-        dep_id:joi.string().trim()
+        name: joi.string().trim().min(2).max(100),
+        Salary:joi.number().min(1000).max(25000),
+        phone:joi.string().regex(/^[0-9]{11}$/).messages({'string.pattern.base': `Phone number must have 11 digits.`}),
+        email: joi.string().trim().min(6).max(100).email(),
+        password:joi.string().trim().min(6).max(100),
+        address:joi.string().trim().min(4).max(100),
+        age:joi.number().min(24).max(80),
+        dep_id:joi.string().trim(),
+        Specialization:joi.string().min(2).max(50),
+        sex:joi.string().trim()
 
     });
     return schema.validate(obj)
 }
 module.exports = {
     Doctor,
- validateRegisterUser
-//  validateLoginUser,
-//  validateUpdateUser
+ validateRegisterDoctor,
+  validateLoginDoctor,
+  validateUpdateDoctor
 
 
 }

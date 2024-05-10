@@ -72,15 +72,15 @@ const NurseSchema = new mongoose.Schema({
 
 const Nurse = mongoose.model("nurse",NurseSchema)
 
-function validateRegisterUser(obj){
+function validateRegisterNurse(obj){
     const schema = joi.object({
-        Nname: joi.string().trim().min(2).max(100).required(),
-        Nemail: joi.string().trim().min(6).max(100).required().email(),
-        NSalary:joi.number().min(1000).max(25000).required(),
-        Nphone:joi.string().trim().min(4).max(100).required(),
-        Nsex:joi.string().trim().required(),
-        Naddress:joi.string().trim().min(4).max(100).required(),
-        Nage:joi.number().min(24).max(80).required(),
+        name: joi.string().trim().min(2).max(100).required(),
+        email: joi.string().trim().min(6).max(100).required().email(),
+        Salary:joi.number().min(1000).max(25000).required(),
+        phone:joi.string().regex(/^[0-9]{11}$/).messages({'string.pattern.base': `Phone number must have 11 digits.`}).required(),
+        sex:joi.string().trim().required(),
+        address:joi.string().trim().min(4).max(100).required(),
+        age:joi.number().min(24).max(80).required(),
         doctor_id:joi.string().trim().required()
 
 
@@ -91,20 +91,24 @@ function validateRegisterUser(obj){
 
 function validateUpdateNurse(obj){
     const schema = joi.object({
-        Nname: joi.string().trim().min(2).max(100),
-        Nemail: joi.string().trim().min(6).max(100).email(),
-        NSalary:joi.number().min(1000).max(25000),
-        Nphone:joi.string().trim().min(4).max(100),
-        Naddress:joi.string().trim().min(4).max(100),
-        Nage:joi.number().min(24).max(80),
-        doctor_id:joi.string().trim()
+        name: joi.string().trim().min(2).max(100),
+        Salary:joi.number().min(1000).max(25000),
+        phone:joi.string().regex(/^[0-9]{11}$/).messages({'string.pattern.base': `Phone number must have 11 digits.`}),
+        address:joi.string().trim().min(4).max(100),
+        age:joi.number().min(24).max(80),
+        doctor_id:joi.string().trim(),
+        sex:joi.string().trim(),
+        email: joi.string().trim().min(6).max(100).email()
+    
 
     });
     return schema.validate(obj)
 }
 module.exports = {
     Nurse,
-    validateRegisterUsr
+    validateUpdateNurse,
+    validateRegisterNurse
+
 
 
 

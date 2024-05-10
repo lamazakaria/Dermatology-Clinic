@@ -1,9 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv")
-const doctors_path = require("./routes/doctors");
-const deps_path = require("./routes/departments");
-const e = require("express");
+const dotenv = require("dotenv");
+const helmet = require("helmet")
+const cors = require("cors")
+
+
 dotenv.config();
 
 // connection to data base
@@ -18,13 +19,19 @@ const app = express();
 // use the Middle Wares
 app.use(express.json()); // handle json file to object file
 
+app.use(helmet())
+app.use(cors({
+    orgin:"http://localhost:3000"
+}))
+
 // ROUTES
-app.use("/home/doctors",doctors_path);
-app.use("/home/departments",deps_path);
+app.use("/home/admin",require("./routes/admins"));
+app.use("/home/doctor",require("./routes/doctors"));
+app.use("/home",require("./routes/home"))
 
 // Middleware to handle URL not found (404)
 app.use((req, res, next) => {
-    const error = new Error(`Not Found - ${req.originalUrl}`);
+    const error = new Error(`Not Found This URL- ${req.originalUrl}`);
     error.status = 404;
     next(error);
 });

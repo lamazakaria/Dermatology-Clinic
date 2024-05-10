@@ -51,7 +51,7 @@ function  validateRegisterAppointment(obj){
     return schema.validate(obj)
 }
 
-function validateUpdateDevice(obj){
+function validateUpdateAppointment(obj){
     const schema = joi.object({
         fees: joi.number().min(20).max(10000),
         
@@ -68,9 +68,10 @@ function validateUpdateDevice(obj){
 
 
 
-const Appointment = mongoose.model("appointment",AppointmentSchema)
+const Appointment = mongoose.model("appoinment",AppointmentSchema)
 
 module.exports ={
     Appointment,
-    validateRegisterAppointment
+    validateRegisterAppointment,
+    validateUpdateAppointment
 }
