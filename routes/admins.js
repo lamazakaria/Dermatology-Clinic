@@ -473,9 +473,4 @@ router.get('/:id/devices',verfiy_token_and_authentication,asynchandler(async(req
 
 
 
-
-
-
-
-
 module.exports = router;

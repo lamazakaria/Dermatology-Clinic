@@ -28,6 +28,7 @@ app.use(cors({
 app.use("/home/admin",require("./routes/admins"));
 app.use("/home/doctor",require("./routes/doctors"));
 app.use("/home",require("./routes/home"))
+app.use("/home/patient",require("./routes/Patients"))
 
 // Middleware to handle URL not found (404)
 app.use((req, res, next) => {
