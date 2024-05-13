@@ -83,6 +83,18 @@ router.get("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
     
 }))
 
+/**
+ * @desc  Cancel appointments
+ * @method delete 
+ * @path home/doctor/id/appointments 
+ */
+router.delete("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+    let appointment_instance = await Appointment.findOneAndDelete({$and:[{doc_id:req.params.id},{pat_id:req.body.pat_id}]})
+    console.log(appointment_instance)
+    res.status(201).json({message:"A Appointment is Canceled"})
+    
+}))
+
 
 
 
