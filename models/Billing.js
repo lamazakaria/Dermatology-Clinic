@@ -5,6 +5,14 @@ const BillingSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    pat_id:{
+        required : true,
+        type: mongoose.Schema.Types.ObjectId ,
+        ref:"Patient",
+        trim:true
+        
+
+    },
     services:[
        { required : true,
         type:{
@@ -35,6 +43,7 @@ const BillingSchema = new mongoose.Schema({
 function validateRegisterBilling(obj){
     schema = joi.object({
         Date: joi.date().format(['YYYY/MM/DD', 'DD-MM-YYYY']).required(),
+        pat_id:joi.string().trim().required(),
         services:joi.array().items(
             joi.object.keys({
                 id:joi.string().trim().required() ,
