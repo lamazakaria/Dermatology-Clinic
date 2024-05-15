@@ -9,12 +9,11 @@ const AppointmentSchema = new mongoose.Schema({
         maxlenght:500
         
     },
-    doc_id:{
+    Dname:{
         required : true,
-        type: mongoose.Schema.Types.ObjectId ,
-        ref:"Doctor",
-        trim:true
-        
+        type: String,
+        minlenght:80,
+        maxlenght:500
         
     },
     pat_id:{
@@ -34,7 +33,12 @@ const AppointmentSchema = new mongoose.Schema({
 
         }
 
-    }
+    },
+    specialty: {
+         type: String,
+        enum : ['Dermatopathology', 'Pediatric Dermatology', 'Mohs Surgery', 'Cosmetic Dermatology'],
+        required: true 
+            }
 
   
 })
@@ -42,10 +46,10 @@ const AppointmentSchema = new mongoose.Schema({
 function  validateRegisterAppointment(obj){
     const schema = joi.object({
         fees: joi.number().min(20).max(10000).required(),    
-        doc_id:joi.string().trim().required(),
+        Dname:joi.string().trim().required(),
         pat_id:joi.string().trim().required(),
-        Time: joi.object().min(3).max(100).required()
-
+        Time: joi.object().min(3).max(100).required(),
+        specialty:joi.string().trim().required()
 
     });
     return schema.validate(obj)
@@ -55,9 +59,10 @@ function validateUpdateAppointment(obj){
     const schema = joi.object({
         fees: joi.number().min(20).max(10000),
         
-        doc_id:joi.string().trim(),
+        Dname:joi.string().trim(),
         pat_id:joi.string().trim(),
         Time: joi.object().min(3).max(100),
+        specialty:joi.string().trim()
         
 
 
