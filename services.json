@@ -1,0 +1,70 @@
+[
+    {
+        "Date": "2024-05-15T00:00:00.000Z",
+        "pat_id": {"$oid": "648b84d96e67cbc991abb208"},
+        "services": [
+            {
+                "id": {"$oid": "6644972fc84d4914a5f0e2e0"},
+                "Service": "Botox injections for wrinkle reduction",
+                "fees": 200
+            },
+            {
+                "id": {"$oid": "6644972fc84d4914a5f0e2e3"},
+                "Service": "Laser hair removal",
+                "fees": 300
+            }
+        ],
+        "Total_Amount": 500,
+        "Payment_Method": "Cash"
+    },
+    {
+        "Date": "2024-05-15T00:00:00.000Z",
+        "pat_id": {"$oid": "648e3033d2a3d861d0c76383"},
+        "services": [
+            {
+                "id": {"$oid": "6644972fc84d4914a5f0e2e1"},
+                "Service": "Dermal fillers for volume restoration",
+                "fees": 250
+            },
+            {
+                "id": {"$oid": "6644972fc84d4914a5f0e2e4"},
+                "Service": "Laser skin resurfacing for acne scars and wrinkles",
+                "fees": 400
+            }
+        ],
+        "Total_Amount": 650,
+        "Payment_Method": "Credit Card"
+    },
+    {
+        "Date": "2024-05-15T00:00:00.000Z",
+        "pat_id": {"$oid": "648f2af01982e18450ab14df"},
+        "services": [
+            {
+                "id": {"$oid": "6644972fc84d4914a5f0e2e2"},
+                "Service": "Chemical peels for skin rejuvenation",
+                "fees": 150
+            }
+        ],
+        "Total_Amount": 150,
+        "Payment_Method": "Cash"
+    },
+    {
+        "Date": "2024-05-15T00:00:00.000Z",
+        "pat_id": {"$oid": "648f250af2ca36b4e157670a"},
+        "services": [
+            {
+                "id": {"$oid": "6644972fc84d4914a5f0e2e7"},
+                "Service": "Non-surgical body contouring procedures",
+                "fees": 500
+            },
+            {
+                "id": {"$oid": "6644972fc84d4914a5f0e2e8"},
+                "Service": "Treatment of hyperpigmentation and melasma",
+                "fees": 280
+            }
+        ],
+        "Total_Amount": 780,
+        "Payment_Method": "Credit Card"
+    }
+]
+

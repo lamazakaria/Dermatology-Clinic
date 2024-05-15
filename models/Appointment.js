@@ -73,7 +73,7 @@ function validateUpdateAppointment(obj){
 
 
 
-const Appointment = mongoose.model("appointment",AppointmentSchema)
+const Appointment = mongoose.model("appoinment",AppointmentSchema)
 
 module.exports ={
     Appointment,
