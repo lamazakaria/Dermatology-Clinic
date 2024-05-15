@@ -5,10 +5,16 @@ const bcrypt = require("bcrypt")
 const { Patient,validateRegisterPatient,validateLoginPatient} =require("../models/Patient")
 const { Doctor,validateRegisterDoctor,validateLoginDoctor} =require("../models/Doctor")
 const { Admin,validateRegisterAdmin,validateLoginAdmin } =require("../models/Admin")
-const jwt = require("jsonwebtoken")
+const{Appointment,validateRegisterAppointment}=require("../models/Appointment")
+const jwt = require("jsonwebtoken");
+const { verfiy_token_and_authentication } = require("../middlewares/verfiyToken");
 
 
-
+/* 
+@desc: Register new patinet(signup)
+@path : /home/signup
+@method : post 
+*/
 router.post("/signup",asynchandler(async(req,res)=>{
     const {error} = validateRegisterPatient(req.body)
     // console.log(req.body)
@@ -33,21 +39,21 @@ router.post("/signup",asynchandler(async(req,res)=>{
     })
 
     const result = await patient_instance.save()
+    const token = jwt.sign({id:patient_instance._id},process.env.JWT_SECRET_KEY,{
+        expiresIn:"7d"})
     const {Ppassword, ...rest} = result._doc
     
-    res.status(201).json({...rest})
+    res.status(201).json({...rest,token})
 
 
 
 }))
 
-
-
-
-
- 
-
-
+/* 
+@desc: sing in
+@path : /home/signin
+@method : post 
+*/
 router.post("/signin",asynchandler(async(req,res)=>{
     const person_type = req.body.person_type
     if(person_type === "doctor")
@@ -140,9 +146,37 @@ router.post("/signin",asynchandler(async(req,res)=>{
 
     }    
 
-
-
 ))
+
+/**
+ * @desc  book Appointment
+ * @method post 
+ * @path home/appointment 
+ */
+router.post("/appointment",asynchandler(async(req,res)=>{
+    const{error}=validateRegisterAppointment(req.body)
+    if(error){
+        res.status(400).json({message:error.details[0].message})
+    }
+    let patient_instance=await Patient.findById(req.body.pat_id)
+    if(!patient_instance){
+        res.status(400).json({message:"This ID is inavaliable, Please Enter Patient ID Correctly"})
+    }
+    let doctor_instance= await Doctor.findById(req.body.doc_id)
+    if(!doctor_instance){
+        res.status(400).json({message:"This ID is inavaliable, Please Enter Doctor ID Correctly"})
+    }
+    const appointment_instance=new Appointment({
+        fees:req.body.fees, 
+        doc_id:req.body.doc_id,
+        pat_id:req.body.pat_id,
+        Time: req.body.Time
+    })
+    const appointment_details=await appointment_instance.save()
+    res.status(200).json(appointment_details)
+}))
+
+
 
 
 
