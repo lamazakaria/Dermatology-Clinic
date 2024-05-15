@@ -9,7 +9,9 @@ const { Nurse,validateRegisterNurse,validateUpdateNurse } = require("../models/N
 const { Device,validateRegisterDevice,validateUpdateDevice} = require("../models/Device")
 const {Dep} = require("../models/Department")
 const { verfiy_token, verfiy_token_and_authentication,  verfiy_isAdmin} = require("../middlewares/verfiyToken")
-
+const { Billing, validateUpdateBilling,validatePatientId} = require("../models/Billing")
+const {Appointment} = require("../models/Appointment")
+ 
 /* 
 @path : admin profile
 @method : get 
@@ -460,7 +462,7 @@ router.put("/:id/devices",verfiy_isAdmin,asynchandler(async(req,res)=>{
 @method : get 
 */
 
-router.get('/:id/devices',verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+router.get('/:id/devices',verfiy_isAdmin,asynchandler(async(req,res)=>{
     let device_instance = await Device.find()
     console.log(device_instance)
 
@@ -470,6 +472,125 @@ router.get('/:id/devices',verfiy_token_and_authentication,asynchandler(async(req
     
 }
 ))
+
+
+/**
+ * @desc show billing's patient
+ * @method  get
+ * @route /admin/:id/billings
+ * 
+ */
+
+router.post("/:id/billings",verfiy_isAdmin,asynchandler(async(req,res)=>{
+    let total_amount = 0
+    var docs;
+    //verfiy patient id
+    const {error} = validatePatientId(req.body)
+    if(error)
+        res.status(400).json({message:error.details[0].message})
+
+   
+
+    const patient_instance = await Patient.findById(req.body.pat_id,'Pname')
+    if(!patient_instance)
+        res.status(400).json({message:"Please Enter ID Correctly"})
+    
+    // get appointments
+    const appointment_instance = await Appointment.find({pat_id:req.body.pat_id})
+   
+
+    // get fees of services
+    const billing_instance = await Billing.find({pat_id:req.body.pat_id})
+    total_amount = billing_instance[0].Total_Amount
+    let date = billing_instance[0].Date.toLocaleDateString()
+    
+    console.log(date)
+    // let  services_list =  billing_instance.services
+    // for(let i=0; i< services_list.length;i++){
+    //     total_amount += services_list[i].fees
+        
+    // }
+
+   
+
+    
+        
+
+    // get fees of appointment
+    if(appointment_instance.length > 0)
+        {  
+
+                    
+            // get name of doctor 
+            let doc_id = appointment_instance[0].doc_id
+            const doctor_instance = await Doctor.findById(doc_id,'Dname')
+    
+            total_amount += appointment_instance[0].fees
+            docs = {
+                Date: date,
+                pat_id:req.body.pat_id,
+                patient_name: patient_instance.Pname,
+                doctor_name : doctor_instance.Dname,
+                Time:appointment_instance[0].Time,
+                appointment_fees:appointment_instance[0].fees,
+                services: billing_instance[0].services,
+                total_amount : total_amount
+
+
+            }
+
+        }
+    else{
+        console.log(patient_instance)
+        docs ={  Date: date,
+                
+                pat_id:req.body.pat_id,
+                patient_name: patient_instance.Pname,
+                services: billing_instance[0].services,
+                total_amount : total_amount
+
+        }
+
+        console.log(docs)
+    }    
+        
+
+    res.status(200).json(docs)
+
+
+
+
+
+
+
+}))
+
+
+/**
+ * @desc add payment method
+ * @method  put
+ * @route /admin/:id/billings
+ * 
+ */
+
+router.put("/:id/billings",verfiy_isAdmin,asynchandler(async(req,res)=>{
+   const { error } = validateUpdateBilling({ Payment_Method: req.body.payment_method });
+
+    if(error)
+        res.status(400).json({message:error.details[0].message})
+
+    const billing_instance = await Billing.findOneAndUpdate({pat_id:req.body.pat_id},{
+        $set:{
+            Payment_Method: req.body.payment_method
+        }
+    },{new:true})
+
+
+
+    res.status(201).json({message:"Payment Successful",billing_instance})
+
+}))
+
 
 
 

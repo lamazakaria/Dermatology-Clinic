@@ -42,7 +42,7 @@ const BillingSchema = new mongoose.Schema({
 
 function validateRegisterBilling(obj){
     schema = joi.object({
-        Date: joi.date().format(['YYYY/MM/DD', 'DD-MM-YYYY']).required(),
+        Date:  joi.date().iso().format(['YYYY-MM-DD', 'YYYY/MM/DD']).required(),
         pat_id:joi.string().trim().required(),
         services:joi.array().items(
             joi.object.keys({
@@ -56,15 +56,40 @@ function validateRegisterBilling(obj){
         Total_Amount:joi.number().required(),
         Payment_Method:joi.string().valid("Cash","Credit Card")
 
+    })
+
+   return  schema.validate(obj)
+}
+
+function validateUpdateBilling(obj){
+    schema = joi.object({
+        Payment_Method:joi.string().valid("Cash","Credit Card").required()
+
+
 
     })
 
    return  schema.validate(obj)
 }
 
+
+function validatePatientId(obj){
+    schema = joi.object({
+        pat_id:joi.string().trim().required()
+
+
+
+    })
+
+   return  schema.validate(obj)
+}
+
+
 const Billing = mongoose.model("billing",BillingSchema)
 
 module.exports = {
     Billing,
-    validateRegisterBilling
+    validateRegisterBilling,
+    validateUpdateBilling,
+    validatePatientId
 } 

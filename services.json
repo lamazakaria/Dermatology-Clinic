@@ -1,15 +1,15 @@
 [
     {
         "Date": "2024-05-15T00:00:00.000Z",
-        "pat_id": "648b84d96e67cbc991abb208",
+        "pat_id": {"$oid": "648b84d96e67cbc991abb208"},
         "services": [
             {
-                "id": "6644972fc84d4914a5f0e2e0",
+                "id": {"$oid": "6644972fc84d4914a5f0e2e0"},
                 "Service": "Botox injections for wrinkle reduction",
                 "fees": 200
             },
             {
-                "id": "6644972fc84d4914a5f0e2e3",
+                "id": {"$oid": "6644972fc84d4914a5f0e2e3"},
                 "Service": "Laser hair removal",
                 "fees": 300
             }
@@ -19,15 +19,15 @@
     },
     {
         "Date": "2024-05-15T00:00:00.000Z",
-        "pat_id": "648e3033d2a3d861d0c76383",
+        "pat_id": {"$oid": "648e3033d2a3d861d0c76383"},
         "services": [
             {
-                "id": "6644972fc84d4914a5f0e2e1",
+                "id": {"$oid": "6644972fc84d4914a5f0e2e1"},
                 "Service": "Dermal fillers for volume restoration",
                 "fees": 250
             },
             {
-                "id": "6644972fc84d4914a5f0e2e4",
+                "id": {"$oid": "6644972fc84d4914a5f0e2e4"},
                 "Service": "Laser skin resurfacing for acne scars and wrinkles",
                 "fees": 400
             }
@@ -37,10 +37,10 @@
     },
     {
         "Date": "2024-05-15T00:00:00.000Z",
-        "pat_id": "648f2af01982e18450ab14df",
+        "pat_id": {"$oid": "648f2af01982e18450ab14df"},
         "services": [
             {
-                "id": "6644972fc84d4914a5f0e2e2",
+                "id": {"$oid": "6644972fc84d4914a5f0e2e2"},
                 "Service": "Chemical peels for skin rejuvenation",
                 "fees": 150
             }
@@ -50,15 +50,15 @@
     },
     {
         "Date": "2024-05-15T00:00:00.000Z",
-        "pat_id": "648f250af2ca36b4e157670a",
+        "pat_id": {"$oid": "648f250af2ca36b4e157670a"},
         "services": [
             {
-                "id": "6644972fc84d4914a5f0e2e7",
+                "id": {"$oid": "6644972fc84d4914a5f0e2e7"},
                 "Service": "Non-surgical body contouring procedures",
                 "fees": 500
             },
             {
-                "id": "6644972fc84d4914a5f0e2e8",
+                "id": {"$oid": "6644972fc84d4914a5f0e2e8"},
                 "Service": "Treatment of hyperpigmentation and melasma",
                 "fees": 280
             }
@@ -67,3 +67,4 @@
         "Payment_Method": "Credit Card"
     }
 ]
+
