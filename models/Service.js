@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 const joi = require("joi")
 
 const ServicesSchema = new mongoose.Schema({
-    Service:{
+    service:{
         type:String,
         required:true,
         trim:true
@@ -16,8 +16,8 @@ const ServicesSchema = new mongoose.Schema({
 
 function validateRegisterService(obj){
     const schema = joi.object({
-        Service: joi.string().trim().required(),
-        fees: joi.number().required(),
+        service: joi.string().trim().required(),
+        fees: joi.number(),
        
 
 

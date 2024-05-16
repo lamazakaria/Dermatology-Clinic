@@ -7,7 +7,6 @@ const {Prescripition}=require("../models/Prescripition")
 const {Appointment}=require("../models/Appointment")
 const{verfiy_token_and_authentication}=require("../middlewares/verfiyToken")
 
-
 /* 
 @decs : Update patient 
 @path : home/patinet
@@ -88,6 +87,9 @@ router.get("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
         res.status(404).json({massage:"This patient has not yet booked an appointment"});
     }
 }))
+
+
+
 
 
 module.exports=router
