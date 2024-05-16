@@ -153,24 +153,34 @@ router.post("/signin",asynchandler(async(req,res)=>{
  * @method post 
  * @path home/appointment 
  */
-router.post("/appointment",asynchandler(async(req,res)=>{
+router.post("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
     const{error}=validateRegisterAppointment(req.body)
     if(error){
         res.status(400).json({message:error.details[0].message})
     }
-    let patient_instance=await Patient.findById(req.body.pat_id)
+    let existing_appointment=await Appointment.findOne({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]})
+    if(existing_appointment){
+        res.status(400).json({message:"This appointment is already done "})
+    }
+    // let patient_instance=await Patient.findById(req.body.pat_id)
+    let patient_instance=await Patient.findById(req.params.id)
     if(!patient_instance){
-        res.status(400).json({message:"This ID is inavaliable, Please Enter Patient ID Correctly"})
+        // res.status(400).json({message:"This ID is inavaliable, Please Enter Patient ID Correctly"})
+        res.status(400).json({message:"You dont have an account ,login firslty"})
     }
-    let doctor_instance= await Doctor.findById(req.body.doc_id)
+    let doctor_instance= await Doctor.findOne({Dname:req.body.Dname})
     if(!doctor_instance){
-        res.status(400).json({message:"This ID is inavaliable, Please Enter Doctor ID Correctly"})
+        res.status(400).json({message:"This Doctor not exist ,enter the correct name"})
     }
+    // if(req.body.pat_id!==req.params.id){
+    //     res.status(400).json({message:"You are not allowed"})
+    // }
     const appointment_instance=new Appointment({
         fees:req.body.fees, 
-        doc_id:req.body.doc_id,
+        Dname:req.body.Dname,
         pat_id:req.body.pat_id,
-        Time: req.body.Time
+        Time: req.body.Time,
+        specialty:req.body.specialty
     })
     const appointment_details=await appointment_instance.save()
     res.status(200).json(appointment_details)

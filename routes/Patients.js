@@ -4,12 +4,13 @@ const asynchandler = require("express-async-handler")
 const bcrypt = require("bcrypt")
 const{Patient,validateUpdatePatient}=require("../models/Patient")
 const {Prescripition}=require("../models/Prescripition")
-const {Appointment}=require("../models/Appointment")
+const {Appointment, validateUpdateAppointment}=require("../models/Appointment")
 const{verfiy_token_and_authentication}=require("../middlewares/verfiyToken")
+
 
 /* 
 @decs : Update patient 
-@path : home/patinet
+@path : home/patinet/id
 @method : put
 */
 
@@ -55,14 +56,15 @@ router.get('/:id',verfiy_token_and_authentication,asynchandler(async(req,res)=>{
 }))
 
 
+
 /**
  * @desc  get data of prescription
  * @method get
  * @path home/patinet/id/prescription 
  */
 
-router.get("/:id/prescription",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
-    const prescripition_instance=await Prescripition.findOne(req.body.id);
+router.get("/:id/prescription",asynchandler(async(req,res)=>{
+    const prescripition_instance=await Prescripition.findOne({pat_id:req.params.id});
     console.log(prescripition_instance)
     if(prescripition_instance){
         res.status(200).json(prescripition_instance)
@@ -79,7 +81,7 @@ router.get("/:id/prescription",verfiy_token_and_authentication,asynchandler(asyn
  */
 
 router.get("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
-    const appointment_instance=await Appointment.findOne(req.body.id)
+    const appointment_instance=await Appointment.findOne({pat_id:req.params.id})
     if(appointment_instance){
         res.status(200).json(appointment_instance)
     }
@@ -91,5 +93,59 @@ router.get("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
 
 
 
+
+
+
+
+/* 
+@decs : Update appointment 
+@path : home/patinet/id/appointment
+@method : put
+*/
+
+router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+    const {error}=validateUpdateAppointment(req.body);
+    if(error){
+        return res.status(400).json({message:error.details[0].message})
+    }
+    let appointment_info=await Appointment.findOne({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]})
+    if(!appointment_info){
+        res.status(404).json({ message: "This Appointment not found" });
+
+    }
+    const updatedPatinet=await Appointment.findOneAndUpdate({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]},{
+        $set:{
+            fees:req.body.fees, 
+            // Dname:req.body.Dname,
+            Time: req.body.Time,
+            specialty:req.body.specialty
+        }
+
+    },{new:true}).select()
+    res.status(200).json(updatedPatinet);
+
+}))
+
+
+/**
+ * @desc  Cancel appointments
+ * @method delete 
+ * @path home/patinet/id/appointment 
+ */
+
+// this if he will book for 2 dictors for example 
+router.delete("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+    let appointment_details=await Appointment.findOne({$and:[{pat_id:req.params.id},{doc_id:req.body.doc_id}]})
+    if(appointment_details){
+        let appointment_instance = await Appointment.findOneAndDelete({$and:[{pat_id:req.params.id},{doc_id:req.body.doc_id}]})
+        
+        console.log(appointment_instance)
+        res.status(201).json({message:"A Appointment is Canceled"})
+    }
+    else{
+        res.status(404).json({ message: "No appointment found for the patient with the specified doctor" });
+    }
+    
+}))
 
 module.exports=router

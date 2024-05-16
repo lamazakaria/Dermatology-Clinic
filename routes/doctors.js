@@ -59,7 +59,7 @@ router.post("/:id/prescription",verfiy_token_and_authentication,asynchandler(asy
 
 /**
  * @desc  get appointments
- * @method post 
+ * @method Get 
  * @path home/doctor/id/appointments 
  */
 router.get("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{

@@ -49,4 +49,4 @@ app.use((err, req, res, next) => {
 
 // RUNNING SERVER  
 PORT = process.env.PORT || 8000;
-app.listen(PORT,()=>console.log('SERVER IS RUNNING ON  ${PORT}'))
+app.listen(PORT,()=>console.log(`SERVER IS RUNNING ON  ${PORT}`))
