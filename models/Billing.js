@@ -35,17 +35,16 @@ const BillingSchema = new mongoose.Schema({
         type: String ,
         trim: true,
         enum:["Cash","Credit Card"],
-        required:true
+        
     }
 
 })
 
 function validateRegisterBilling(obj){
     schema = joi.object({
-        Date:  joi.date().iso().format(['YYYY-MM-DD', 'YYYY/MM/DD']).required(),
         pat_id:joi.string().trim().required(),
         services:joi.array().items(
-            joi.object.keys({
+            joi.object().keys({
                 id:joi.string().trim().required() ,
                 Service:joi.string().trim().required(),
                 fees:joi.number().required()
