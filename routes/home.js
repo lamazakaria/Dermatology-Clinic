@@ -151,7 +151,7 @@ router.post("/signin",asynchandler(async(req,res)=>{
 /**
  * @desc  book Appointment
  * @method post 
- * @path home/appointment 
+ * @path home/:id/appointment 
  */
 router.post("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
     const{error}=validateRegisterAppointment(req.body)
