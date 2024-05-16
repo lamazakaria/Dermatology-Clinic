@@ -505,11 +505,6 @@ router.post("/:id/billings",verfiy_isAdmin,asynchandler(async(req,res)=>{
     let date = billing_instance[0].Date.toLocaleDateString()
     
     console.log(date)
-    // let  services_list =  billing_instance.services
-    // for(let i=0; i< services_list.length;i++){
-    //     total_amount += services_list[i].fees
-        
-    // }
 
    
 
