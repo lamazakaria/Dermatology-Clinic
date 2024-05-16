@@ -166,11 +166,11 @@ router.post("/:id/appointment",verfiy_token_and_authentication,asynchandler(asyn
     let patient_instance=await Patient.findById(req.params.id)
     if(!patient_instance){
         // res.status(400).json({message:"This ID is inavaliable, Please Enter Patient ID Correctly"})
-        res.status(400).json({message:"You dont have an account ,login firslty"})
+        res.status(400).json({message:"You don't have an account ,login firslty"})
     }
     let doctor_instance= await Doctor.findOne({Dname:req.body.Dname})
     if(!doctor_instance){
-        res.status(400).json({message:"This Doctor not exist ,enter the correct name"})
+        res.status(400).json({message:"This Doctor not exist"})
     }
     // if(req.body.pat_id!==req.params.id){
     //     res.status(400).json({message:"You are not allowed"})
