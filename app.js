@@ -1,16 +1,14 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const helmet = require("helmet")
-const cors = require("cors")
+const cors = require("cors");
+const connectToDB = require("./config/db");
 
 
 dotenv.config();
 
 // connection to data base
-mongoose.connect(process.env.MONGO_URL)
-.then(()=>console.log("Connected to DB"))
-.catch((error)=>console.log("Connected Failed to db",error));
+connectToDB();
 
 
 // Init App
