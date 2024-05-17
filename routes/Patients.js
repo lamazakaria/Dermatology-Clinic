@@ -4,11 +4,13 @@ const asynchandler = require("express-async-handler")
 const bcrypt = require("bcrypt")
 const{Patient,validateUpdatePatient}=require("../models/Patient")
 const {Prescripition}=require("../models/Prescripition")
-const {Appointment, validateUpdateAppointment}=require("../models/Appointment")
+const {Appointment, validateUpdateAppointment,validateRegisterAppointment}=require("../models/Appointment")
 const{verfiy_token_and_authentication}=require("../middlewares/verfiyToken")
 const { Billing, validateRegisterBilling,validatePatientId} = require("../models/Billing")
 const { Doctor} =require("../models/Doctor")
 const { Service,validateRegisterService} = require("../models/Service")
+const{Time,validateRegisterTime}=require("../models/Time")
+
 
 /* 
 @decs : Update patient 
@@ -251,7 +253,6 @@ router.get("/:id/billing",verfiy_token_and_authentication,asynchandler(async(req
     if(appointment_instance.length > 0)
         {  
 
-                    
             // get name of doctor 
             let doc_id = appointment_instance[0].doc_id
             const doctor_instance = await Doctor.findById(doc_id,'Dname')
@@ -266,7 +267,6 @@ router.get("/:id/billing",verfiy_token_and_authentication,asynchandler(async(req
                 appointment_fees:appointment_instance[0].fees,
                 services: billing_instance[0].services,
                 total_amount : total_amount
-
 
             }
 
@@ -288,21 +288,92 @@ router.get("/:id/billing",verfiy_token_and_authentication,asynchandler(async(req
 
     res.status(200).json(docs)
 
-
-
-
-
-
-
-
-
-
 }))
 
+/**
+ * @desc  book Appointment
+ * @method post 
+ * @path home/patient/id/appointment 
+ */
+router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(async (req, res) => {
+    
+        const { error } = validateRegisterAppointment(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
+        }
 
+        // Check if appointment already exists for the patient
+        const existingAppointment = await Appointment.findOne({$and: [
+            {pat_id: req.params.id},
+            {Dname: req.body.Dname},
+            {"Time.Day": req.body.Day},
+            {"Time.start": req.body.start},
+           { "Time.end": req.body.end}
+        ]});
 
+        if (existingAppointment) {
+            return res.status(400).json({ message: "This appointment is already booked." });
+        }
 
+        // Check if patient exists
+        const patientInstance = await Patient.findById(req.params.id);
+        if (!patientInstance) {
+            return res.status(400).json({ message: "Patient not found." });
+        }
 
+        // Check if doctor exists
+        const doctorInstance = await Doctor.findOne({ Dname: req.body.Dname });
+        if (!doctorInstance) {
+            return res.status(400).json({ message: "Doctor not found." });
+        }
+        const doctorTimeSlots = await Time.findOne({
+            doc_id: doctorInstance._id
+        });
+        const { Day, start, end } = req.body.Time;
+        const slot_availabilaty="valid"
+        let matchingSlot = doctorTimeSlots.slots.find(slot =>
+            slot.Day === Day &&
+            slot.start === start &&
+            slot.end === end &&
+            slot.Status===slot_availabilaty
+        );
+        console.log("Matching Slot", matchingSlot);
+        if (! matchingSlot) {
+            return res.status(400).json({ message: "The selected time slot is not available." });
+        }
+        doctorTimeSlots.NumofReservations++
+        await doctorTimeSlots.save();
+        
+
+        // Update the time slot status to mark it as invalid
+        const updatedTimeSlot = await Time.findOneAndUpdate(
+            {
+                doc_id: doctorInstance._id,
+                "slots.Day": req.body.Time.Day,
+                "slots.start": req.body.Time.start,
+                "slots.end": req.body.Time.end,
+                "slots.Status": "valid"
+            },
+            { $set: { "slots.$.Status": "invalid" } },
+            { new: true }
+        );
+
+        // Create and save the appointment
+        const appointmentInstance = new Appointment({
+            fees: req.body.fees,
+            Dname: req.body.Dname,
+            pat_id: req.params.id,
+            specialty: req.body.specialty,
+            Time: {
+                Day: req.body.Day,
+                start: req.body.start,
+                end: req.body.end
+            }
+        });
+        const appointmentDetails = await appointmentInstance.save();
+        res.status(200).json(appointmentDetails);
+    
+}));
 
 
 
