@@ -16,17 +16,21 @@ const app = express();
 
 // use the Middle Wares
 app.use(express.json()); // handle json file to object file
+app.use(express.urlencoded({extended: false}));
 
 app.use(helmet())
 app.use(cors({
     orgin:"http://localhost:3000"
 }))
 
+app.set('view engine', 'ejs');
+
 // ROUTES
 app.use("/home/admin",require("./routes/admins"));
 app.use("/home/doctor",require("./routes/doctors"));
 app.use("/home",require("./routes/home"))
 app.use("/home/patient",require("./routes/Patients"))
+app.use("/password",require("./routes/password"))
 
 // Middleware to handle URL not found (404)
 app.use((req, res, next) => {
