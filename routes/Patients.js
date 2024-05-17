@@ -133,15 +133,15 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
 
 /**
  * @desc  Cancel appointments
- * @method delete 
- * @path home/patinet/id/appointment 
+ * @method DELETE 
+ * @path home/patient/appointment/id  
  */
 
 // this if he will book for 2 dictors for example 
-router.delete("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
-    let appointment_details=await Appointment.findOne({$and:[{pat_id:req.params.id},{doc_id:req.body.doc_id}]})
+router.delete("/appointment/:id",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+    let appointment_details=await Appointment.findOne({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]})
     if(appointment_details){
-        let appointment_instance = await Appointment.findOneAndDelete({$and:[{pat_id:req.params.id},{doc_id:req.body.doc_id}]})
+        let appointment_instance = await Appointment.findOneAndDelete({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]})
         
         console.log(appointment_instance)
         res.status(201).json({message:"A Appointment is Canceled"})
