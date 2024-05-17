@@ -112,22 +112,84 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
         res.status(404).json({ message: "This Appointment not found" });
 
     }
-    const updatedPatinet=await Appointment.findOneAndUpdate({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]},{
-        $set:{
-            fees: req.body.fees,
-            specialty: req.body.specialty,
-            Time: {
-                Day: req.body.Time.Day,
-                start: req.body.Time.start,
-                end: req.body.Time.end
-            }
+    // If time slot is being updated, check availability and update the time slot status
+    const { Day, start, end } = req.body.Time;
+    if (Day !== appointment_info.Time.Day || start !== appointment_info.Time.start || end !== appointment_info.Time.end) {
+        const doctorInstance = await Doctor.findOne({ Dname: req.body.Dname });
+        const doctorTimeSlots = await Time.findOne({
+            doc_id: doctorInstance._id
+        });
+        console.log("appointment_info.Time.Day",appointment_info.Time.Day)
+        console.log("appointment_info.Time.start",appointment_info.Time.start)
+        console.log("appointment_info.Time.end",appointment_info.Time.end)
+
+        // Mark the old time slot as valid
+        await Time.findOneAndUpdate(
+            {
+                doc_id: doctorInstance._id,
+                "slots.Day": appointment_info.Time.Day,
+                "slots.start": appointment_info.Time.start,
+                "slots.end": appointment_info.Time.end,
+                "slots.Status": "invalid"
+            },
+            { $set: { "slots.$.Status": "valid" } },
+            { new: true },
+
+            
+        );
+
+        // Check if the new slot is available
+        let matchingSlot = doctorTimeSlots.slots.find(slot =>
+            slot.Day === Day &&
+            slot.start === start &&
+            slot.end === end &&
+            slot.Status === "valid"
+        );
+
+        if (!matchingSlot) {
+            return res.status(400).json({ message: "The selected time slot is not available." });
         }
-        
 
-    },{new:true}).select()
-    res.status(200).json(updatedPatinet);
+        // Mark the new time slot as invalid
+        await Time.findOneAndUpdate(
+            {
+                doc_id: doctorInstance._id,
+                "slots.Day": Day,
+                "slots.start": start,
+                "slots.end": end,
+                "slots.Status": "valid"
+            },
+            { $set: { "slots.$.Status": "invalid" } },
+            { new: true }
+        );
+        // Update the appointment details
+        const updatedAppointment = await Appointment.findOneAndUpdate(
+        {$and: [{ pat_id: req.params.id },{ Dname: req.body.Dname }]},
+        {
+            $set: {
+                fees: req.body.fees,
+                specialty: req.body.specialty,
+                Time: {
+                    Day: req.body.Time.Day,
+                    start: req.body.Time.start,
+                    end: req.body.Time.end
+                }
+            }
+        },
+        { new: true }
+    );
 
-}))
+        res.status(200).json(updatedAppointment);
+
+        // doctorTimeSlots.NumofReservations++;
+        // await doctorTimeSlots.save();
+    }
+    else{
+        return res.status(400).json({ message: "No changes were made to the appointment.The new appointment is the same as the current appointment." });
+    }
+
+    
+}));
 
 
 /**
