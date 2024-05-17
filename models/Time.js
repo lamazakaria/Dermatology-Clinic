@@ -12,7 +12,6 @@ const TimeSchema = new mongoose.Schema({
         required : true,
         type: mongoose.Schema.Types.ObjectId ,
         ref:"Doctor",
-        ref:"Patient",
         trim:true 
     },
     // doc_name:{
@@ -29,8 +28,8 @@ const TimeSchema = new mongoose.Schema({
             start: String,
             end: String,
             Status:String
-
         }
+        
       
     }]
     

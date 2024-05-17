@@ -30,7 +30,6 @@ const AppointmentSchema = new mongoose.Schema({
             Day: String,
             start: String,
             end: String
-
         }
 
     },
@@ -63,9 +62,7 @@ function validateUpdateAppointment(obj){
         pat_id:joi.string().trim(),
         Time: joi.object().min(3).max(100),
         specialty:joi.string().trim()
-        
-
-
+ 
     });
     return schema.validate(obj)
 }

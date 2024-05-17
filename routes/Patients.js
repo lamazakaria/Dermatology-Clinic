@@ -96,11 +96,6 @@ router.get("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
 
 
 
-
-
-
-
-
 /* 
 @decs : Update appointment 
 @path : home/patinet/id/appointment
@@ -119,11 +114,15 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
     }
     const updatedPatinet=await Appointment.findOneAndUpdate({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]},{
         $set:{
-            fees:req.body.fees, 
-            // Dname:req.body.Dname,
-            Time: req.body.Time,
-            specialty:req.body.specialty
+            fees: req.body.fees,
+            specialty: req.body.specialty,
+            Time: {
+                Day: req.body.Time.Day,
+                start: req.body.Time.start,
+                end: req.body.Time.end
+            }
         }
+        
 
     },{new:true}).select()
     res.status(200).json(updatedPatinet);
@@ -138,27 +137,57 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
  */
 
 // this if he will book for 2 dictors for example 
-router.delete("/appointment/:id",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+router.delete("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
     let appointment_details=await Appointment.findOne({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]})
     if(appointment_details){
         let appointment_instance = await Appointment.findOneAndDelete({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]})
-        
-        console.log(appointment_instance)
-        res.status(201).json({message:"A Appointment is Canceled"})
+        const { Day, start, end } = appointment_details.Time;
+        const doctorInstance = await Doctor.findOne({ Dname: req.body.Dname });
+        const doctorTimeSlots = await Time.findOne({
+            doc_id: doctorInstance._id
+        });
+        let matchingSlot = doctorTimeSlots.slots.find(slot =>
+            slot.Day === Day &&
+            slot.start === start &&
+            slot.end === end &&
+            slot.Status==="invalid"
+        );
+        console.log("Matching Slot", matchingSlot);
+        if (matchingSlot) {
+            
+            // Update the time slot status to mark it as valid
+            const updatedTimeSlot = await Time.findOneAndUpdate(
+                {
+                    doc_id: doctorInstance._id,
+                    "slots.Day": Day,
+                    "slots.start":start,
+                    "slots.end": end,
+                    "slots.Status": "invalid"
+                },
+                { $set: { "slots.$.Status": "valid" } },
+                { new: true }
+            );
+            doctorTimeSlots.NumofReservations--
+            await doctorTimeSlots.save();
+            console.log("appointment_instance",appointment_instance)
+            return res.status(201).json({message:"A Appointment is Canceled"});
+        }
+
     }
     else{
         res.status(404).json({ message: "No appointment found for the patient with the specified doctor" });
     }
     
+    
+    
+
 }))
-
-
 
 /**
  * @desc  book service
  * @method post
  * @path home/patient/id/services
- 
+
  */
 router.post("/:id/services",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
     const{error} = validateRegisterService(req.body)
@@ -365,9 +394,9 @@ router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(as
             pat_id: req.params.id,
             specialty: req.body.specialty,
             Time: {
-                Day: req.body.Day,
-                start: req.body.start,
-                end: req.body.end
+                Day: req.body.Time.Day,
+                start: req.body.Time.start,
+                end: req.body.Time.end
             }
         });
         const appointmentDetails = await appointmentInstance.save();
