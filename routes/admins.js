@@ -506,10 +506,7 @@ router.post("/:id/billings",verfiy_isAdmin,asynchandler(async(req,res)=>{
     
     console.log(date)
 
-   
 
-    
-        
 
     // get fees of appointment
     if(appointment_instance.length > 0)
