@@ -316,6 +316,50 @@ router.post("/:id/services",verfiy_token_and_authentication,asynchandler(async(r
 }))
 
 /**
+ * @desc  Cancel service
+ * @method post
+ * @path home/patient/id/services
+
+ */
+router.delete("/id/services",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+    if (!req.body.service)
+        {
+            res.status(400).json({message:"Name of service is Required"})
+ 
+        }
+    const billing_instance = await Billing.findOne({pat_id:req.params.id})
+    let services_list = billing_instance.services
+
+    services_list = services_list.filter(service => service.name != req.body.service)
+    console.log("sevices_list",services_list)
+
+    if(services_list.length < 1)
+        {
+            const appointment_instance = await Appointment.find({pat_id:req.params.id})
+            if (appointment_instance.lenght < 1)
+                {
+                    const deletion_service = await Billing.findOneAndDelete({pat_id:req.params.id})
+                    res.status(201).json({message:"Service is Canceled"})
+
+                }
+
+        }
+    else{
+        const billing_update = await Billing.findOneAndUpdate({pat_id:req.params.id},{$set:{
+
+            services:services_list
+
+        }},{new:true})
+
+        res.status(201).json({message:"Service is Canceled",billing_update})
+    }    
+
+}))
+
+
+
+
+/**
  * @desc  show biling
  * @method post
  * @path home/patient/id/billing
@@ -462,6 +506,18 @@ router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(as
             }
         });
         const appointmentDetails = await appointmentInstance.save();
+        // create billing for this appointment 
+        const billing_instance = await Billing.findOne({pat_id:req.body.pat_id}) // make sure for doesnot have billing before
+        if(! billing_instance){
+    
+            const created_billing = new Billing({
+                pat_id:req.params.id,
+                services:[],
+                Total_Amount:0,
+
+            })
+            const billing_data = await created_billing.save()
+        }
         res.status(200).json(appointmentDetails);
     
 }));

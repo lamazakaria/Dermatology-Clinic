@@ -161,9 +161,16 @@ router.put("/:id/doctors",verfiy_isAdmin,asynchandler(async(req,res)=>{
     if(!id_existed){
         res.status(400).json({message:"Please Enter ID Correctly"})
     }
+    let hashed_password;
 
-    const salt = await bcrypt.genSalt(10)
-    let hashed_password = await bcrypt.hash(req.body.password,salt)
+    if(req.body.password)
+        {
+            const salt = await bcrypt.genSalt(10)
+            hashed_password = await bcrypt.hash(req.body.password,salt)
+
+        }
+
+
     let dep_instance = await Dep.findById(req.body.dep_id)
     if(!dep_instance)
         res.status(400).json({message:"This Department ID is inavaliable, Please Enter  Department ID Correctly"})
@@ -186,7 +193,7 @@ router.put("/:id/doctors",verfiy_isAdmin,asynchandler(async(req,res)=>{
 
         }
     },
-    {new:true}).select("-Dpassword")
+    {new:true}).
     console.log(doctor_instance)
     res.status(201).json({message:"User is updated",doctor_instance})
 
