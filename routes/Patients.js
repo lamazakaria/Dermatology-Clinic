@@ -514,7 +514,6 @@ router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(as
             { new: true }
         );
         console.log("updatedTimeSlot",updatedTimeSlot)
-
         // Create and save the appointment
         const appointmentInstance = new Appointment({
             fees: req.body.fees,
@@ -571,6 +570,7 @@ router.get('/:id/available_appointments', asynchandler(async (req, res) => {
 
                 // Construct doctor's information with available slots
                 const doctorInfo = {
+                    docid:docId,
                     Fees:departmenFees,
                     doctorName: doctor ? doctor.Dname : "Unknown",
                     DoctorSpecialization: doctor ? doctor.Specialization : "Unknown",
@@ -586,9 +586,7 @@ router.get('/:id/available_appointments', asynchandler(async (req, res) => {
     
     if(specialization && day ){
         const Departments=await Dep.find( {_id: specialization} )
-        console.log("appoinitmnet",Departments)
         if (Departments) {
-            console.log("sara")
             const doctors=await Dep.find( {_id: specialization} ).select('doctor_id')
             console.log("doctors",doctors)
             const doctorIds = doctors.map(doc => doc.doctor_id);
@@ -601,8 +599,6 @@ router.get('/:id/available_appointments', asynchandler(async (req, res) => {
                     const availableSlots = doctorTimeSlots.slots.filter(slot =>
                         slot.Status === "valid" && slot.Day === day
                     );
-                
-                    
                     const doctor = await Doctor.findById(docId).select('Dname Specialization');
                     const departmenFees = await Dep.findOne({ doctor_id: docId }).select('fees -_id fees').exec();
                     
