@@ -541,8 +541,7 @@ router.post("/:id/billings",verfiy_isAdmin,asynchandler(async(req,res)=>{
         }
     else{
         console.log(patient_instance)
-        docs ={  Date: date,
-                
+        docs ={  Date: date,    
                 pat_id:req.body.pat_id,
                 patient_name: patient_instance.Pname,
                 services: billing_instance[0].services,

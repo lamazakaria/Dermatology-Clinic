@@ -9,6 +9,8 @@ const { Nurse,validateRegisterNurse,validateUpdateNurse } = require("../models/N
 const { Prescripition,validatePrescripition,validateUpdatePrescripition} = require("../models/Prescripition")
 const{Appointment} = require("../models/Appointment")
 const { verfiy_token, verfiy_token_and_authentication,  verfiy_isAdmin} = require("../middlewares/verfiyToken")
+const {  MedicalRecord, validateRegisterMedicalRecord} = require("../models/MedicalRecord")
+
 
 /**
  * @desc show doctor profile
@@ -32,7 +34,8 @@ router.get("/:id",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
 
 router.post("/:id/prescription",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
     req.body.doc_id = req.params.id
-    const {error} = validatePrescripition(req.body)
+    const{notes,...other} = req.body 
+    const {error} = validatePrescripition({doc_id:req.body.doc_id,...other})
     if(error)
         res.status(400).json({message:error.details[0].message})
     let patient_instance = await Patient.findById(req.body.pat_id)
@@ -50,10 +53,74 @@ router.post("/:id/prescription",verfiy_token_and_authentication,asynchandler(asy
 
     })
 
+
     const docs = await prescripition_instance.save()
     console.log(docs)
+    // add data to medical record
+ 
+    let get_medical_records = await MedicalRecord.findOne({pat_id:req.body.pat_id})
+    if(get_medical_records)
+        {   let diagnosis_list =  get_medical_records.diagnosis
+            let prescription_list = get_medical_records.prescriptions
+            diagnosis_list = diagnosis_list.push(req.body.Disease)
+            prescription_list = prescription_list.push({ dosage:req.body.Dosage, medication:req.body.Nameofmedicine})
+            const medical_records_updated = await MedicalRecord.findOneAndUpdate({pat_id:req.body.pat_id},{
+                $set:{
+                    diagnosis:diagnosis_list,
+                    prescriptions:prescription_list
+
+
+                }
+            },{new:true})  
+            console.log(medical_records_updated)
+
+        }
+    else{
+        let medical_record_data ={
+            pat_id:req.body.pat_id,
+            diagnosis:[req.body.Disease],
+            prescriptions:[{
+                dosage:req.body.Dosage,
+                medication:req.body.Nameofmedicine
+
+            }],
+            notes:req.body.notes
+
+            
+        }
+        const {error_data} = validateRegisterMedicalRecord(medical_record_data)
+        if(error_data)
+            res.status(400).json({message:error_data.details[0].message})
+    
+        let medical_record_instance = new MedicalRecord(medical_record_data)
+        const medical_docs = await medical_record_instance.save()
+        console.log(medical_docs)
+
+    }    
+   
+
+    
     res.status(201).json(docs)
     
+
+}))
+
+
+/**
+ * @desc  get data of medical_records
+ * @method: post
+ * @path home/doctor/id/medicalrecord 
+ */
+router.post("/:id/medicalrecord",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+    let get_medical_records = await MedicalRecord.findOne({pat_id:req.body.pat_id})
+    if(!get_medical_records)
+        res.status(201).json({message:"Patient do not have any Medical Records"})
+    const{visitDate,...other} = get_medical_records
+    let date = visitDate.toLocaleDateString()
+    let patient_instance = await Patient.findOne({_id:req.body.pat_id}).select('Pname Page Psex Pphone')
+
+    res.status(201).json({date,patient_instance,...other})
+
 
 }))
 
@@ -94,6 +161,8 @@ router.delete("/:id/appointment",verfiy_token_and_authentication,asynchandler(as
     res.status(201).json({message:"A Appointment is Canceled"})
     
 }))
+
+
 
 
 
