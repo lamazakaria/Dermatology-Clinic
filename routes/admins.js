@@ -36,12 +36,9 @@ router.get('/:id',verfiy_token_and_authentication,asynchandler(async(req,res)=>{
 @method : get 
 */
 
-router.get('/:id/patients',verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+router.get('/:id/patients',verfiy_isAdmin,asynchandler(async(req,res)=>{
     let patient_instance = await Patient.find()
     console.log(patient_instance)
-
-    
-
     res.status(201).json(patient_instance)
     
 }
@@ -206,7 +203,7 @@ router.put("/:id/doctors",verfiy_isAdmin,asynchandler(async(req,res)=>{
 @method : get 
 */
 
-router.get('/:id/doctors',verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+router.get('/:id/doctors',verfiy_isAdmin,asynchandler(async(req,res)=>{
     let doctor_instance = await Doctor.find()
     console.log(doctor_instance)
 
@@ -340,7 +337,7 @@ router.put("/:id/nurses",verfiy_isAdmin,asynchandler(async(req,res)=>{
 @method : get 
 */
 
-router.get('/:id/nurses',verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+router.get('/:id/nurses',verfiy_isAdmin,asynchandler(async(req,res)=>{
     let nurse_instance = await Nurse.find()
     console.log(nurse_instance)
 
@@ -541,8 +538,7 @@ router.post("/:id/billings",verfiy_isAdmin,asynchandler(async(req,res)=>{
         }
     else{
         console.log(patient_instance)
-        docs ={  Date: date,
-                
+        docs ={  Date: date,    
                 pat_id:req.body.pat_id,
                 patient_name: patient_instance.Pname,
                 services: billing_instance[0].services,

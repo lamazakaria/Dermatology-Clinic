@@ -11,6 +11,7 @@ const { Doctor} =require("../models/Doctor")
 const { Service,validateRegisterService} = require("../models/Service")
 const{Time,validateRegisterTime}=require("../models/Time")
 const{Dep}=require("../models/Department")
+const {  MedicalRecord, validateRegisterMedicalRecord} = require("../models/MedicalRecord")
 
 /* 
 @decs : Update patient 
@@ -60,6 +61,24 @@ router.get('/:id',verfiy_token_and_authentication,asynchandler(async(req,res)=>{
 }))
 
 
+/**
+ * @desc  get data of medical records
+ * @method get
+ * @path home/patinet/id/medicalrecord
+ */
+
+router.get("/:id/medicalrecord",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+    let medical_record_instance = await MedicalRecord.findOne({pat_id:req.params.id})
+    if(!medical_record_instance)
+        res.status(201).json({message:"You don't have any Medical Records"})
+    res.status(201).json(medical_record_instance)
+}))
+
+
+
+
+
+
 
 /**
  * @desc  get data of prescription
@@ -67,7 +86,7 @@ router.get('/:id',verfiy_token_and_authentication,asynchandler(async(req,res)=>{
  * @path home/patinet/id/prescription 
  */
 
-router.get("/:id/prescription",asynchandler(async(req,res)=>{
+router.get("/:id/prescription",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
     const prescripition_instance=await Prescripition.findOne({pat_id:req.params.id});
     console.log(prescripition_instance)
     if(prescripition_instance){
@@ -450,7 +469,7 @@ router.get("/:id/billing",verfiy_token_and_authentication,asynchandler(async(req
  * @path home/patient/id/appointment 
  */
 router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(async (req, res) => {
-       let {...data} = req.body
+       let {doc_id,...data} = req.body
     
         const { error } = validateRegisterAppointment({pat_id:req.params.id,...data});
         if (error) {
@@ -549,7 +568,7 @@ router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(as
  * @path home/patient/:id/available_appointments
  */
 
-router.get('/:id/available_appointments', asynchandler(async (req, res) => {
+router.get('/:id/available_appointments',verfiy_token_and_authentication, asynchandler(async (req, res) => {
     // Extract query parameters
     const { specialization,day} = req.query;
         const Doctorsinalldep = await Dep.find({}).select('doctor_id DPname _id fees').exec();

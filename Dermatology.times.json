@@ -1,0 +1,191 @@
+[{
+  "_id": {
+    "$oid": "6491893f61e14fbfc98a71d6"
+  },
+  "NumofReservations": 2,
+  "doc_id": {
+    "$oid": "649098ac2e11c27b416535a7"
+  },
+  "slots": [
+    {
+      "Day": "Sunday",
+      "start": "09:00",
+      "end": "10:00"
+    },
+    {
+      "Day": "Sunday",
+      "end": "12:00",
+      "start": "11:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6491893f61e14fbfc98a71d7"
+  },
+  "NumofReservations": 2,
+  "doc_id": {
+    "$oid": "663cca44043417d0b8478bd5"
+  },
+  "slots": [
+    {
+      "Day": "Thursday",
+      "start": "09:00",
+      "end": "10:00",
+      "Status": "invalid"
+    },
+    {
+      "Day": "Thursday",
+      "start": "1:00",
+      "end": "1:30",
+      "Status": "valid"
+    },
+    {
+      "Day": "Wednesday",
+      "start": "4:00",
+      "end": "4:30",
+      "Status": "invalid"
+    },
+    {
+      "Day": "Wednesday",
+      "Status": "valid",
+      "end": "10:30",
+      "start": "10:00"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6491893f61e14fbfc98a71d8"
+  },
+  "NumofReservations": 0,
+  "doc_id": {
+    "$oid": "64929f0930ebe76eef6b9212"
+  },
+  "slots": [
+    {
+      "Day": "Saturday",
+      "start": "09:00",
+      "end": "10:00",
+      "Status": "valid"
+    },
+    {
+      "Day": "Saturday",
+      "start": "1:00",
+      "end": "1:30",
+      "Status": "invalid"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6491893f61e14fbfc98a71d9"
+  },
+  "NumofReservations": 0,
+  "doc_id": {
+    "$oid": "649098ac2e11c27b416535aa"
+  },
+  "slots": [
+    {
+      "Day": "Friday",
+      "start": "09:00",
+      "end": "10:00",
+      "Status": "valid",
+      "doc_id": {
+        "$oid": "649098ac2e11c27b416535aa"
+      }
+    },
+    {
+      "Day": "Friday",
+      "start": "1:00",
+      "end": "1:30",
+      "Status": "valid"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6491893f61e14fbfc98a71da"
+  },
+  "NumofReservations": 0,
+  "doc_id": {
+    "$oid": "649098ac2e11c27b416535ab"
+  },
+  "slots": [
+    {
+      "end": "9:30",
+      "start": "9:00",
+      "Day": "Monday",
+      "Status": "invalid"
+    },
+    {
+      "Day": "Thursday",
+      "end": "10:30",
+      "start": "10:00",
+      "Status": "invalid"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6491893f61e14fbfc98a71db"
+  },
+  "NumofReservations": 0,
+  "doc_id": {
+    "$oid": "649098ac2e11c27b416535ac"
+  },
+  "slots": [
+    {
+      "Day": "Thuesday",
+      "start": "08:00",
+      "end": "8:30"
+    },
+    {
+      "Day": "Thuesday",
+      "start": "2:00",
+      "end": "2:30"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6491893f61e14fbfc98a71dc"
+  },
+  "NumofReservations": 0,
+  "doc_id": {
+    "$oid": "649098ac2e11c27b416535ad"
+  },
+  "slots": [
+    {
+      "Day": "Sunday",
+      "start": "09:00",
+      "end": "10:00"
+    },
+    {
+      "Day": "Sunday",
+      "start": "1:00",
+      "end": "1:30"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6491893f61e14fbfc98a71dd"
+  },
+  "NumofReservations": 0,
+  "doc_id": {
+    "$oid": "6490e0805ce75f03ece46778"
+  },
+  "slots": [
+    {
+      "Day": "Thursday",
+      "start": "09:00",
+      "end": "10:00"
+    },
+    {
+      "Day": "Thursday",
+      "start": "1:00",
+      "end": "1:30"
+    }
+  ]
+}]
