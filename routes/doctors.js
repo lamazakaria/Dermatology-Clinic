@@ -143,7 +143,6 @@ router.get("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
             console.log(patient_instance)
             appointment_list.push({Time,patient_instance})
 
-
         }
 
     res.status(201).json(appointment_list)
