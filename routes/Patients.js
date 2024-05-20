@@ -10,7 +10,7 @@ const { Billing, validateRegisterBilling,validatePatientId} = require("../models
 const { Doctor} =require("../models/Doctor")
 const { Service,validateRegisterService} = require("../models/Service")
 const{Time,validateRegisterTime}=require("../models/Time")
-
+const{Dep}=require("../models/Department")
 
 /* 
 @decs : Update patient 
@@ -542,6 +542,153 @@ router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(as
         }
         res.status(200).json(appointmentDetails);
     
+}));
+
+/**
+ * @desc  get available appointments
+ * @method get
+ * @path home/patient/:id/available_appointments
+ */
+
+router.get('/:id/available_appointments', asynchandler(async (req, res) => {
+    // Extract query parameters
+    const { specialization,day} = req.query;
+        const Doctorsinalldep = await Dep.find({}).select('doctor_id DPname _id fees').exec();
+        let availableAppointments=[]
+        const doctorIds = Doctorsinalldep.map(doc => doc.doctor_id);
+    if (!specialization && !day) {
+
+        for (let i = 0; i < doctorIds.toString().split(',').length; i++) {
+            const docId = doctorIds.toString().split(',')[i];
+            const doctorTimeSlots = await Time.findOne({ doc_id: docId });
+            if (doctorTimeSlots) {
+                // Filter slots to find available ones
+                const availableSlots = doctorTimeSlots.slots.filter(slot =>
+                    slot.Status === "valid" 
+                );
+                const doctor = await Doctor.findById(docId).select('Dname Specialization');
+                const departmenFees = await Dep.findOne({ doctor_id: docId }).select('fees -_id fees ').exec();
+
+                // Construct doctor's information with available slots
+                const doctorInfo = {
+                    Fees:departmenFees,
+                    doctorName: doctor ? doctor.Dname : "Unknown",
+                    DoctorSpecialization: doctor ? doctor.Specialization : "Unknown",
+                    availableSlots: availableSlots
+                };
+
+                availableAppointments.push(doctorInfo);
+            }}
+            console.log("availableAppointments",availableAppointments)
+
+            return res.status(200).json(availableAppointments);
+    }
+    
+    if(specialization && day ){
+        const Departments=await Dep.find( {_id: specialization} )
+        console.log("appoinitmnet",Departments)
+        if (Departments) {
+            console.log("sara")
+            const doctors=await Dep.find( {_id: specialization} ).select('doctor_id')
+            console.log("doctors",doctors)
+            const doctorIds = doctors.map(doc => doc.doctor_id);
+            let availableAppointments = [];
+            for (let i = 0; i < doctorIds.toString().split(',').length; i++) {
+                const docId = doctorIds.toString().split(',')[i];
+                const doctorTimeSlots = await Time.findOne({ doc_id: docId });
+                if (doctorTimeSlots) {
+                    // Filter slots to find available ones
+                    const availableSlots = doctorTimeSlots.slots.filter(slot =>
+                        slot.Status === "valid" && slot.Day === day
+                    );
+                
+                    
+                    const doctor = await Doctor.findById(docId).select('Dname Specialization');
+                    const departmenFees = await Dep.findOne({ doctor_id: docId }).select('fees -_id fees').exec();
+                    
+                    // Construct doctor's information with available slots
+                    const doctorInfo = {
+                        doctorIds: docId,
+                        Fees:departmenFees,
+                        doctorName: doctor ? doctor.Dname : "Unknown",
+                        DoctorSpecialization: doctor ? doctor.Specialization : "Unknown",
+                        availableSlots: availableSlots
+                    };
+
+                    availableAppointments.push(doctorInfo);
+                }
+            }
+            return res.status(200).json(availableAppointments);
+
+    }
+ 
+}
+    if(specialization ){
+        const Departments=await Dep.find( {_id: specialization} )
+        
+        console.log("appoinitmnet",Departments)
+        if (Departments) {
+            const doctors=await Dep.find( {_id: specialization} ).select('doctor_id')
+            const doctorIds = doctors.map(doc => doc.doctor_id);
+            let availableAppointments = [];
+            for (let i = 0; i < doctorIds.toString().split(',').length; i++) {
+                console.log("ranaa")
+                const docId = doctorIds.toString().split(',')[i];
+                const doctorTimeSlots = await Time.findOne({ doc_id: docId });
+                if (doctorTimeSlots) {
+                    // Filter slots to find available ones
+                    const availableSlots = doctorTimeSlots.slots.filter(slot =>
+                        slot.Status === "valid" 
+                    );
+                
+                    const doctor = await Doctor.findById(docId).select('Dname Specialization');
+                    const departmenFees = await Dep.findOne({ doctor_id: docId }).select('fees -_id fees').exec();
+                    // Construct doctor's information with available slots
+                    const doctorInfo = {
+                        doctorIds: docId,
+                        Fees:departmenFees,
+                        doctorName: doctor ? doctor.Dname : "Unknown",
+                        DoctorSpecialization: doctor ? doctor.Specialization : "Unknown",
+                        availableSlots: availableSlots
+                    };
+
+                    availableAppointments.push(doctorInfo);
+                }
+
+            }
+            console.log("availableAppointments",availableAppointments)
+
+            return res.status(200).json(availableAppointments);
+    }
+
+    }
+    if (day) {
+        const Doctorsinalldep = await Dep.find({}).select('doctor_id DPname _id').exec();
+        let availableAppointments=[]
+    
+        for (let i = 0; i < doctorIds.toString().split(',').length; i++) {
+            const docId = doctorIds.toString().split(',')[i];
+            const doctorTimeSlots = await Time.findOne({ doc_id: docId, "slots.Day": day });
+            if (doctorTimeSlots) {
+                // Filter slots to find available ones
+                const availableSlots = doctorTimeSlots.slots.filter(slot =>
+                    slot.Status === "valid" 
+                );
+                const doctor = await Doctor.findById(docId).select('Dname Specialization');
+                const departmenFees = await Dep.findOne({ doctor_id: docId }).select('fees -_id fees').exec();
+                // Construct doctor's information with available slots
+                const doctorInfo = {
+                    doctorIds: docId,
+                    Fees:departmenFees,
+                    doctorName: doctor ? doctor.Dname : "Unknown",
+                    DoctorSpecialization: doctor ? doctor.Specialization : "Unknown",
+                    availableSlots: availableSlots
+                };
+                availableAppointments.push(doctorInfo);
+            }}
+            return res.status(200).json(availableAppointments);
+    }
+
 }));
 
 
