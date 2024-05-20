@@ -107,7 +107,7 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
     if(error){
         return res.status(400).json({message:error.details[0].message})
     }
-    let appointment_info=await Appointment.findOne({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]})
+    let appointment_info=await Appointment.findOne({$and:[{pat_id:req.params.id},{doc_id:req.body.doc_id}]})
     if(!appointment_info){
         res.status(404).json({ message: "This Appointment not found" });
 
@@ -115,9 +115,9 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
     // If time slot is being updated, check availability and update the time slot status
     const { Day, start, end } = req.body.Time;
     if (Day !== appointment_info.Time.Day || start !== appointment_info.Time.start || end !== appointment_info.Time.end) {
-        const doctorInstance = await Doctor.findOne({ Dname: req.body.Dname });
+        const doctorInstance = await Doctor.findById(req.body.doc_id);
         const doctorTimeSlots = await Time.findOne({
-            doc_id: doctorInstance._id
+            doc_id: req.body.doc_id
         });
         console.log("appointment_info.Time.Day",appointment_info.Time.Day)
         console.log("appointment_info.Time.start",appointment_info.Time.start)
@@ -126,7 +126,7 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
         // Mark the old time slot as valid
         await Time.findOneAndUpdate(
             {
-                doc_id: doctorInstance._id,
+                doc_id: req.body.doc_id,
                 "slots.Day": appointment_info.Time.Day,
                 "slots.start": appointment_info.Time.start,
                 "slots.end": appointment_info.Time.end,
@@ -153,7 +153,7 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
         // Mark the new time slot as invalid
         await Time.findOneAndUpdate(
             {
-                doc_id: doctorInstance._id,
+                doc_id: req.body.doc_id,
                 "slots.Day": Day,
                 "slots.start": start,
                 "slots.end": end,
@@ -164,11 +164,10 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
         );
         // Update the appointment details
         const updatedAppointment = await Appointment.findOneAndUpdate(
-        {$and: [{ pat_id: req.params.id },{ Dname: req.body.Dname }]},
+        {$and: [{ pat_id: req.params.id },{doc_id:req.body.doc_id }]},
         {
             $set: {
                 fees: req.body.fees,
-                specialty: req.body.specialty,
                 Time: {
                     Day: req.body.Time.Day,
                     start: req.body.Time.start,
@@ -200,13 +199,13 @@ router.put("/:id/appointment",verfiy_token_and_authentication,asynchandler(async
 
 // this if he will book for 2 dictors for example 
 router.delete("/:id/appointment",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
-    let appointment_details=await Appointment.findOne({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]})
+    let appointment_details=await Appointment.findOne({$and:[{pat_id:req.params.id},{doc_id:req.body.doc_id}]})
     if(appointment_details){
-        let appointment_instance = await Appointment.findOneAndDelete({$and:[{pat_id:req.params.id},{Dname:req.body.Dname}]})
+        let appointment_instance = await Appointment.findOneAndDelete({$and:[{pat_id:req.params.id},{doc_id:req.body.doc_id}]})
         const { Day, start, end } = appointment_details.Time;
-        const doctorInstance = await Doctor.findOne({ Dname: req.body.Dname });
+        const doctorInstance = await Doctor.findOne({  doc_id:req.body.doc_id });
         const doctorTimeSlots = await Time.findOne({
-            doc_id: doctorInstance._id
+           doc_id:req.body.doc_id
         });
         let matchingSlot = doctorTimeSlots.slots.find(slot =>
             slot.Day === Day &&
@@ -220,7 +219,7 @@ router.delete("/:id/appointment",verfiy_token_and_authentication,asynchandler(as
             // Update the time slot status to mark it as valid
             const updatedTimeSlot = await Time.findOneAndUpdate(
                 {
-                    doc_id: doctorInstance._id,
+                    doc_id:req.body.doc_id,
                     "slots.Day": Day,
                     "slots.start":start,
                     "slots.end": end,
@@ -321,7 +320,7 @@ router.post("/:id/services",verfiy_token_and_authentication,asynchandler(async(r
  * @path home/patient/id/services
 
  */
-router.delete("/id/services",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
+router.delete("/:id/services",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
     if (!req.body.service)
         {
             res.status(400).json({message:"Name of service is Required"})
@@ -330,24 +329,43 @@ router.delete("/id/services",verfiy_token_and_authentication,asynchandler(async(
     const billing_instance = await Billing.findOne({pat_id:req.params.id})
     let services_list = billing_instance.services
 
-    services_list = services_list.filter(service => service.name != req.body.service)
+    services_list = services_list.filter(service => service.Service != req.body.service)
     console.log("sevices_list",services_list)
+    // console.log("sevices_list",services_list.length)
 
     if(services_list.length < 1)
         {
             const appointment_instance = await Appointment.find({pat_id:req.params.id})
-            if (appointment_instance.lenght < 1)
+            if (appointment_instance.length < 1)
                 {
                     const deletion_service = await Billing.findOneAndDelete({pat_id:req.params.id})
-                    res.status(201).json({message:"Service is Canceled"})
+                    res.status(201).json({message:"Service is Canceled",deletion_service})
 
                 }
+            else{
+                const billing_update = await Billing.findOneAndUpdate({pat_id:req.params.id},{$set:{
+
+                    services:services_list,
+                    Total_Amount:0
+        
+                }},{new:true})
+
+                res.status(201).json({message:"Service is Canceled",billing_update})
+
+            }    
 
         }
     else{
+        let total_amount = 0;
+        for(let i=0;i<services_list.length;i++){
+            total_amount += services_list[i].fees
+            console.log("total_amount",total_amount)
+
+        }
         const billing_update = await Billing.findOneAndUpdate({pat_id:req.params.id},{$set:{
 
-            services:services_list
+            services:services_list,
+            Total_Amount:total_amount
 
         }},{new:true})
 
@@ -390,6 +408,7 @@ router.get("/:id/billing",verfiy_token_and_authentication,asynchandler(async(req
 
             // get name of doctor 
             let doc_id = appointment_instance[0].doc_id
+            console.log("doc_id",appointment_instance[0].doc_id)
             const doctor_instance = await Doctor.findById(doc_id,'Dname')
     
             total_amount += appointment_instance[0].fees
@@ -431,8 +450,9 @@ router.get("/:id/billing",verfiy_token_and_authentication,asynchandler(async(req
  * @path home/patient/id/appointment 
  */
 router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(async (req, res) => {
+       let {...data} = req.body
     
-        const { error } = validateRegisterAppointment(req.body);
+        const { error } = validateRegisterAppointment({pat_id:req.params.id,...data});
         if (error) {
             return res.status(400).json({ message: error.details[0].message });
         }
@@ -440,7 +460,7 @@ router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(as
         // Check if appointment already exists for the patient
         const existingAppointment = await Appointment.findOne({$and: [
             {pat_id: req.params.id},
-            {Dname: req.body.Dname},
+            {doc_id: req.body.doc_id},
             {"Time.Day": req.body.Day},
             {"Time.start": req.body.start},
            { "Time.end": req.body.end}
@@ -457,14 +477,15 @@ router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(as
         }
 
         // Check if doctor exists
-        const doctorInstance = await Doctor.findOne({ Dname: req.body.Dname });
+        const doctorInstance = await Doctor.findById(req.body.doc_id)
         if (!doctorInstance) {
             return res.status(400).json({ message: "Doctor not found." });
         }
         const doctorTimeSlots = await Time.findOne({
-            doc_id: doctorInstance._id
+            doc_id: req.body.doc_id
         });
         const { Day, start, end } = req.body.Time;
+        console.log("doctorTimeSlots",doctorTimeSlots.slots)
         const slot_availabilaty="valid"
         let matchingSlot = doctorTimeSlots.slots.find(slot =>
             slot.Day === Day &&
@@ -492,13 +513,13 @@ router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(as
             { $set: { "slots.$.Status": "invalid" } },
             { new: true }
         );
+        console.log("updatedTimeSlot",updatedTimeSlot)
 
         // Create and save the appointment
         const appointmentInstance = new Appointment({
             fees: req.body.fees,
-            Dname: req.body.Dname,
+            doc_id: req.body.doc_id,
             pat_id: req.params.id,
-            specialty: req.body.specialty,
             Time: {
                 Day: req.body.Time.Day,
                 start: req.body.Time.start,
@@ -517,6 +538,7 @@ router.post("/:id/appointment", verfiy_token_and_authentication, asynchandler(as
 
             })
             const billing_data = await created_billing.save()
+            console.log("billing",billing_data)
         }
         res.status(200).json(appointmentDetails);
     
