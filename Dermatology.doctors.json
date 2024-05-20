@@ -1,0 +1,103 @@
+[{
+  "_id": {
+    "$oid": "649098ac2e11c27b416535a7"
+  },
+  "Dname": "Dr.Sofia",
+  "Demail": "sofia@example.com",
+  "Dpassword": "$2b$05$sDI7F6fr/TZfo9QZjDOnP.JU3.7Dc0FR9diQZXlku0H8/BBp3RzMe",
+  "DSalary": 6000,
+  "Dphone": "0123456780",
+  "Dsex": "Female",
+  "Daddress": "Alexandria, Egypt",
+  "Dage": 30,
+  "dep_id": {
+    "$oid": "648c7cb45ebc10c6f071242b"
+  },
+  "Specialization": "Ph.D. in Experimental Dermatology"
+},
+{
+  "_id": {
+    "$oid": "649098ac2e11c27b416535a8"
+  },
+  "Dname": "Dr.Jared Daniel",
+  "Demail": "jared@example.com",
+  "Dpassword": "$2b$05$LnrLwk.nD2KkuL8rUp9ac.hHRpHDC/cLbgFCzHdn.ujowXdAEFfIq",
+  "DSalary": 7000,
+  "Dphone": "0123456781",
+  "Dsex": "Male",
+  "Daddress": "Giza, Egypt",
+  "Dage": 45,
+  "dep_id": {
+    "$oid": "648c7cb45ebc10c6f071242c"
+  },
+  "Specialization": "Ph.D. in Dermatological Sciences "
+},
+{
+  "_id": {
+    "$oid": "649098ac2e11c27b416535a9"
+  },
+  "Dname": "Dr.Emma steeve",
+  "Demail": "emma,@example.com",
+  "Dpassword": "$2b$05$xRSllwMyoLznX767dAmaqeRK9hcumNH0uFmcJ2q/RClzEhy6Vy75e",
+  "DSalary": 7000,
+  "Dphone": "0123456782",
+  "Dsex": "Female",
+  "Daddress": "Aswan, Egypt",
+  "Dage": 38,
+  "dep_id": {
+    "$oid": "648c7ee1486780a1d775d9d5"
+  },
+  "Specialization": "Ph.D. in Dermatoepidemiology"
+},
+{
+  "_id": {
+    "$oid": "649098ac2e11c27b416535aa"
+  },
+  "Dname": "Dr.Lisa Martin",
+  "Demail": "lisa@example.com",
+  "Dpassword": "$2b$05$sNP7YtLrDZpIyHkAgXhOAu0k1zHu3bPwXkgoVoXcaoPcgxS1bMxm2",
+  "DSalary": 5500,
+  "Dphone": "0123456783",
+  "Dsex": "female",
+  "Daddress": "Luxor, Egypt",
+  "Dage": 42,
+  "dep_id": {
+    "$oid": "662d43bbcf399abc66f2723e"
+  },
+  "Specialization": "Ph.D. in Experimental Dermatology"
+},
+{
+  "_id": {
+    "$oid": "649098ac2e11c27b416535ab"
+  },
+  "Dname": "Dr.Alexandra Reynolds",
+  "Demail": "alexandra@gmail.com",
+  "Dpassword": "$2b$10$bGHgjKa6mj7wrShAPbPloeJZdVyXC1tRFlXSHWjBk6m78T8QsUQWu",
+  "DSalary": 5500,
+  "Dphone": "01234567484",
+  "Dsex": "Female",
+  "Daddress": "Hurghada, Egypt",
+  "Dage": 37,
+  "dep_id": {
+    "$oid": "648c7cb45ebc10c6f071242b"
+  },
+  "Specialization": "Ph.D. in Skin Pharmacology"
+},
+{
+  "_id": {
+    "$oid": "663cca44043417d0b8478bd5"
+  },
+  "Dname": "Ahmed Elsayed",
+  "Demail": "ahmed12@gmail.com",
+  "Dpassword": "$2b$10$X09RSo3lIFHDuWdFewLqM.dTPubvQNZPBwtto/7tB8jfgLt1r6pzi",
+  "DSalary": 6000,
+  "Dphone": "01168802543",
+  "Dsex": "Male",
+  "Daddress": "Cairo, Egypt",
+  "Dage": 36,
+  "Specialization": "Ph.D. in Dermatoepidemiology",
+  "dep_id": {
+    "$oid": "648c7cb45ebc10c6f071242b"
+  },
+  "__v": 0
+}]

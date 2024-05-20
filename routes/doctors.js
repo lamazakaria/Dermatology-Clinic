@@ -27,7 +27,7 @@ router.get("/:id",verfiy_token_and_authentication,asynchandler(async(req,res)=>{
 
 
 /**
- * @desc  get data of prescription
+ * @desc  add data of prescription
  * @method post 
  * @path home/doctor/id/prescription 
  */
@@ -62,12 +62,13 @@ router.post("/:id/prescription",verfiy_token_and_authentication,asynchandler(asy
     if(get_medical_records)
         {   let diagnosis_list =  get_medical_records.diagnosis
             let prescription_list = get_medical_records.prescriptions
-            diagnosis_list = diagnosis_list.push(req.body.Disease)
-            prescription_list = prescription_list.push({ dosage:req.body.Dosage, medication:req.body.Nameofmedicine})
+            diagnosis_list.push(req.body.Disease)
+            prescription_list.push({ dosage:req.body.Dosage, medication:req.body.Nameofmedicine})
             const medical_records_updated = await MedicalRecord.findOneAndUpdate({pat_id:req.body.pat_id},{
                 $set:{
                     diagnosis:diagnosis_list,
-                    prescriptions:prescription_list
+                    prescriptions:prescription_list,
+                    notes:req.body.notes
 
 
                 }
