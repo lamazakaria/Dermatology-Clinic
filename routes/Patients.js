@@ -11,6 +11,7 @@ const { Doctor} =require("../models/Doctor")
 const { Service,validateRegisterService} = require("../models/Service")
 const{Time,validateRegisterTime}=require("../models/Time")
 const{Dep}=require("../models/Department")
+const {  MedicalRecord, validateRegisterMedicalRecord} = require("../models/MedicalRecord")
 
 /* 
 @decs : Update patient 
@@ -58,6 +59,33 @@ router.get('/:id',verfiy_token_and_authentication,asynchandler(async(req,res)=>{
         res.status(404).json({massage:"not found"});
     }
 }))
+
+
+/**
+ * @desc  get data of medical records
+ * @method get
+ * @path home/patinet/id/medicalrecord
+ */
+
+router.get("/:id/medicalrecord",asynchandler(async(req,res)=>{
+    let medical_record_instance = await MedicalRecord.findOne({pat_id:req.params.id})
+    if(!medical_record_instance)
+        res.status(201).json({message:"You don't have any Medical Records"})
+    res.status(201).json(medical_record_instance)
+}))
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
