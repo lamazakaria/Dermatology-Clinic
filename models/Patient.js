@@ -67,9 +67,25 @@ const Patient = mongoose.model("patient",PatientSchema)
 
 function validateRegisterPatient(obj){
     const schema = joi.object({
-        name: joi.string().trim().min(2).max(100).required(),
-        email: joi.string().trim().min(6).max(100).required().email(),
-        password:joi.string().trim().min(6).max(100).required(),
+        name: joi.string().trim().min(2).max(100).required().messages({
+            'string.empty': 'Name is required.',
+            'string.min': 'Name must be at least 2 characters long.',
+            'string.max': 'Name must be less than or equal to 100 characters long.',
+            'any.required': 'Name is required.'
+        }),
+        email: joi.string().trim().min(6).max(100).required().email().messages({
+            'string.empty': 'Email is required.',
+            'string.min': 'Email must be at least 6 characters long.',
+            'string.max': 'Email must be less than or equal to 100 characters long.',
+            'string.email': 'Email must be a valid email address.',
+            'any.required': 'Email is required.'
+        }),
+        password:joi.string().trim().min(6).max(100).required().messages({
+            'string.empty': 'Password is required.',
+            'string.min': 'Password must be at least 6 characters long.',
+            'string.max': 'Password must be less than or equal to 100 characters long.',
+            'any.required': 'Password is required.'
+        }),
         phone:joi.string().regex(/^[0-9]{11}$/).messages({'string.pattern.base': `Phone number must have 11 digits.`}).required(),
         sex:joi.string().trim().required(),
         address:joi.string().trim().min(4).max(100).required(),
