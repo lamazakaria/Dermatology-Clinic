@@ -88,7 +88,12 @@ function validateRegisterPatient(obj){
         }),
         phone:joi.string().regex(/^[0-9]{11}$/).messages({'string.pattern.base': `Phone number must have 11 digits.`}).required(),
         sex:joi.string().trim().required(),
-        address:joi.string().trim().min(4).max(100).required(),
+        address:joi.string().trim().min(4).max(100).required().messages({
+            'string.empty': 'Address is required.',
+            'string.min': 'Address must be at least 4 characters long.',
+            'string.max': 'Address must be less than or equal to 100 characters long.',
+            'any.required': 'Address is required.'
+        }),
         age:joi.number().min(2).max(80).required(),
 
 
