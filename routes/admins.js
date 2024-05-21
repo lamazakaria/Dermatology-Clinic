@@ -175,6 +175,8 @@ router.put("/:id/doctors",verfiy_isAdmin,asynchandler(async(req,res)=>{
     
 
     //update doctor 
+    
+    console.log(req.body)
     let doctor_instance = await Doctor.findByIdAndUpdate(req.body.id,{
         $set:{
             Dname: req.body.name,
@@ -189,9 +191,8 @@ router.put("/:id/doctors",verfiy_isAdmin,asynchandler(async(req,res)=>{
             dep_id:req.body.dep_id
 
         }
-    },
-    {new:true}).
-    console.log(doctor_instance)
+    },{new:true})
+    console.log("doctor_instaance",doctor_instance)
     res.status(201).json({message:"User is updated",doctor_instance})
 
 }))
